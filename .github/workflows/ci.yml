@@ -5,18 +5,29 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  security:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 🔐 Scan des dépendances
+      - name: Run Trivy FS scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'HIGH,CRITICAL'
+
+      # 🐳 Build image Docker
       - name: Build Docker image
         run: docker build -t devsecops-app ./app
 
-      - name: Lint YAML
-        uses: ibiqlik/action-yamllint@v3
+      # 🔐 Scan image Docker
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'devsecops-app'
+          severity: 'HIGH,CRITICAL'
 
-      - name: Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
