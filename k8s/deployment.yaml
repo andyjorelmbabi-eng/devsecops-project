@@ -6,14 +6,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: devsecops-app
+      app: devsecops
   template:
     metadata:
       labels:
-        app: devsecops-app
+        app: devsecops
     spec:
       containers:
-      - name: devsecops-app
-        image: devsecops-app:latest
-        ports:
-        - containerPort: 5000
+        - name: app
+          image: devsecops-app
+          ports:
+            - containerPort: 5000
+          securityContext:
+            runAsNonRoot: true
